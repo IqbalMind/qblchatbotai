@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qontak AI Bot Monitor</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .log-item { background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-left: 5px solid #007bff; border-radius: 4px; }
+        .time { font-size: 12px; color: #888; }
+        .status { font-weight: bold; color: #dc3545; }
+        .status.unassigned { color: #28a745; }
+        button { background: #007bff; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Live Webhook Logs (Qontak -> Gemini)</h2>
+    <button onclick="loadLogs()">Refresh Data</button>
+    <div id="logContainer" style="margin-top: 20px;">
+        <p>Belum ada data webhook...</p>
+    </div>
+</div>
+
+<script>
+    function loadLogs() {
+        // Fetch ke file data.json
+        fetch('api/data.json?t=' + new Date().getTime())
+            .then(response => response.text())
+            .then(text => {
+                const container = document.getElementById('logContainer');
+                container.innerHTML = ''; 
+                
+                // Parse format JSONL (JSON Lines)
+                const lines = text.trim().split('\n');
+                if (lines.length === 0 || text.trim() === '') {
+                    container.innerHTML = '<p>Belum ada data.</p>';
+                    return;
+                }
+
+                lines.reverse().forEach(line => {
+                    if(line.trim() !== '') {
+                        try {
+                            const data = JSON.parse(line);
+                            const statusClass = data.room_status === 'unassigned' ? 'status unassigned' : 'status';
+                            
+                            container.innerHTML += `
+                                <div class="log-item">
+                                    <div class="time">${data.time} | Event: ${data.event}</div>
+                                    <div><strong>Sender:</strong> ${data.sender}</div>
+                                    <div><strong>Room Status:</strong> <span class="${statusClass}">${data.room_status}</span></div>
+                                    <div style="margin-top:8px;"><strong>Message:</strong> "${data.text}"</div>
+                                </div>
+                            `;
+                        } catch (e) {
+                            console.error("Error parsing line:", line);
+                        }
+                    }
+                });
+            })
+            .catch(err => {
+                document.getElementById('logContainer').innerHTML = '<p>Gagal memuat data.</p>';
+                console.error(err);
+            });
+    }
+
+    // Load pertama kali saat halaman dibuka
+    loadLogs();
+</script>
+
+</body>
+</html>

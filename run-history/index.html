@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QBLStore Bot - Run History & Latency</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+        h2 { color: #00d2ff; margin: 0; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 6px; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #333; }
+        th { background-color: #2a2a2a; color: #aaa; text-transform: uppercase; font-size: 12px; }
+        tr:hover { background-color: #252525; }
+        
+        .message-box { font-size: 13px; max-width: 300px; }
+        .user-msg { color: #fff; margin-bottom: 4px;}
+        .ai-msg { color: #88c0d0; font-style: italic; }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .badge-fast { background: rgba(40, 167, 69, 0.2); color: #4ade80; }
+        .badge-med { background: rgba(255, 193, 7, 0.2); color: #facc15; }
+        .badge-slow { background: rgba(220, 53, 69, 0.2); color: #f87171; }
+        .badge-ignore { background: #333; color: #888; }
+        
+        .latency-col { display: flex; flex-direction: column; gap: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Run History & API Latency Monitor</h2>
+        <button onclick="loadLogs()">Refresh Data</button>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Waktu (WIB)</th>
+                <th>Sender / Event</th>
+                <th>Pesan & Balasan AI</th>
+                <th>API Latency (ms)</th>
+                <th>Total Eksekusi</th>
+            </tr>
+        </thead>
+        <tbody id="logTableBody">
+            <tr><td colspan="5" style="text-align:center;">Memuat data...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function getLatencyBadge(ms) {
+        if (ms === 0 || ms === undefined) return `<span class="badge badge-ignore">N/A</span>`;
+        if (ms < 1500) return `<span class="badge badge-fast">${ms} ms</span>`;
+        if (ms < 3000) return `<span class="badge badge-med">${ms} ms</span>`;
+        return `<span class="badge badge-slow">${ms} ms</span>`;
+    }
+
+    function formatTime(timeStr) {
+        // Asumsi timeStr sudah dalam format Y-m-d H:i:s (WIB) dari PHP
+        if (!timeStr) return '-';
+        return timeStr.substring(11, 19); 
+    }
+
+    function loadLogs() {
+        // Path disesuaikan karena file ini ada di dalam folder /run-history/
+        fetch('../api/data.json?t=' + new Date().getTime())
+            .then(response => response.text())
+            .then(text => {
+                const tbody = document.getElementById('logTableBody');
+                tbody.innerHTML = ''; 
+                
+                const lines = text.trim().split('\n');
+                if (lines.length === 0 || text.trim() === '') {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada history.</td></tr>';
+                    return;
+                }
+
+                lines.reverse().forEach(line => {
+                    if(line.trim() !== '') {
+                        try {
+                            const data = JSON.parse(line);
+                            
+                            // Hanya tampilkan jika itu chat dari customer
+                            if (data.event !== 'receive_message_from_customer') return;
+
+                            // Handle log lama yang belum punya objek latency
+                            const latency = data.latency || { total_ms: 0, gemini_ms: 0, qontak_ms: 0 };
+
+                            const totalBadge = getLatencyBadge(latency.total_ms);
+                            const geminiBadge = getLatencyBadge(latency.gemini_ms);
+                            const qontakBadge = getLatencyBadge(latency.qontak_ms);
+
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td style="white-space: nowrap; font-size: 14px;">
+                                        <strong>${formatTime(data.time)}</strong><br>
+                                        <span style="font-size:11px; color:#666;">${(data.time || '').substring(0,10)}</span>
+                                    </td>
+                                    <td>
+                                        <strong>${data.sender}</strong><br>
+                                        <span style="font-size:11px; color:#888;">Status: ${data.room_status}</span>
+                                    </td>
+                                    <td class="message-box">
+                                        <div class="user-msg">🧑: "${data.text}"</div>
+                                        <div class="ai-msg">🤖: "${(data.ai_response || 'No response recorded').substring(0, 100)}..."</div>
+                                    </td>
+                                    <td>
+                                        <div class="latency-col">
+                                            <span>Gemini: ${geminiBadge}</span>
+                                            <span>Qontak: ${qontakBadge}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        ${totalBadge}
+                                    </td>
+                                </tr>
+                            `;
+                        } catch (e) {
+                            console.error("Error parsing line:", line, e);
+                        }
+                    }
+                });
+            })
+            .catch(err => {
+                document.getElementById('logTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data JSON.</td></tr>';
+                console.error(err);
+            });
+    }
+
+    loadLogs();
+</script>
+
+</body>
+</html>

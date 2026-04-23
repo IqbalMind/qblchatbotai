@@ -1,0 +1,9 @@
+node_modules/
+vendor/
+.env
+config.php
+api/chat_data.json
+api/data.json
+api/sessions.json
+api/debug_gemini.txt
+*.log
