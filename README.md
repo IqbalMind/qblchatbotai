@@ -10,7 +10,7 @@
 [![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![Gemini AI](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![WhatsApp](https://img.shields.io/badge/WhatsApp-API-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://whatsapp.com)
-[![Mekari](https://img.shields.io/badge/Mekari-Qontak-FF6B35?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgo=)](https://qontak.com)
+[![Mekari](https://img.shields.io/badge/Mekari-Qontak-FF6B35?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAALVBMVEVHcEwpef8rfv8pev8qfP8qe/8pev8qe/8pev8qe/8pev8pev8qe/8pev8pef8FFd0qAAAADnRSTlMA9Q3XMFjoeY9xpalMqnCpGC4AAACiSURBVDiNzVLLEsQgCBPwUduu//+5nZYRFOzM3nZzgyAJSAh/hnQQAH3SC701wbagI7QR0fJnMzA60fK2h/QHVVr5qxgC1oVTzmTkCLNtkTiBPUbrc3/ioi9Y5ZCY5ga9BZkZ3FTwfYGT4IxKOJO8Wd2lHfO2WcoYzotaoK+6vJboF4Fg9LT67tm1P5jb0yRiTs4XTEfLqM5q2imLx+z5X+ECpf8QUhVXcRYAAAAASUVORK5CYII=&logoColor=white)](https://qontak.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 <br/>
