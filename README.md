@@ -55,10 +55,10 @@ sequenceDiagram
    In `api/webhook.php`, you need to set up your specific API keys:
    - Identify `$geminiApiKey = 'YOUR_GEMINI_API_KEY';` and replace it with your active Google Gemini Token.
    - Identify `$qontakToken = 'YOUR_QONTAK_TOKEN';` and replace it with your Mekari Qontak API Token.
-   - **Important Security Note:** Because this code will be on GitHub, *do not hardcode* your actual tokens into your public repository. We have set `.gitignore` to skip files like `.env`, so you can transition these values to environment variables in your production environment.
 
 3. **Log & Session Files Access**
    Make sure the `api/` directory has write permissions so the script can save `sessions.json`, `data.json`, and `chat_data.json` safely.
 
 4. **Integration with Mekari Qontak**
-   Provide the public URL of your `webhook.php` to the Mekari Qontak Webhook Integration settings under "Receive new message". You might use tools like `ngrok` if you are testing locally.
+   - Provide the **public URL** of your `webhook.php` to the Mekari Qontak Webhook Integration settings under "Receive new message". 
+   - **Note:** Qontak only works with public domains. If you are testing locally, you **must** use a tool like `ngrok` or `cloudflare tunnel` to expose your local server to the internet.
