@@ -47,8 +47,8 @@ sequenceDiagram
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/IqbalMind/qblchatbotai.git
+   cd qblchatbotai
    ```
 
 2. **Configuration Settings**
