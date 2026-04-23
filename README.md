@@ -13,8 +13,6 @@ This repository demonstrates how to build and integrate a WhatsApp Chatbot using
 
 Below is a detailed sequence diagram highlighting the workflow from the moment a user sends a message to when they receive an AI response.
 
-![Sequence Diagram](http://code.iqbalmind.id/uploads/sequence_diagram.png)
-
 ```mermaid
 sequenceDiagram
     autonumber
